@@ -1,0 +1,24 @@
+{
+    "name": "waughj/directory",
+    "description": "Template for easily making composer projects.",
+    "keywords": [ "composer", "template" ],
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Jaimeson Waugh",
+            "email": "waughjai@gmail.com"
+        }
+    ],
+    "type": "library",
+    "require": {
+		"php": ">=7.0"
+    },
+    "require-dev": {
+		"phpunit/phpunit": "6.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "WaughJ\\Directory\\": "src/"
+        }
+    }
+}
