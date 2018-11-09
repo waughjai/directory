@@ -1,7 +1,7 @@
 {
     "name": "waughj/directory",
-    "description": "Template for easily making composer projects.",
-    "keywords": [ "composer", "template" ],
+    "description": "Simple class for encapsulating file directory object.",
+    "keywords": [ "directory", "file" ],
     "license": "GPL-2.0-or-later",
     "authors": [
         {
@@ -9,7 +9,7 @@
             "email": "waughjai@gmail.com"
         }
     ],
-    "type": "library",
+    "type": "libraryt",
     "require": {
 		"php": ">=7.0"
     },
