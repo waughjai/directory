@@ -74,6 +74,15 @@ class DirectoryTest extends TestCase
 		ob_start();
 		$dir1->print();
 		$this->assertEquals( '/var/www/html/', ob_get_clean() );
+		ob_start();
+		$dir2->print([ 'starting-slash' => false ]);
+		$this->assertEquals( 'https://www.jaimeson-waugh.com/', ob_get_clean() );
+		ob_start();
+		$dir3->print([ 'starting-slash' => false, 'ending-slash' => false ]);
+		$this->assertEquals( 'https://www.jaimeson-waugh.com/index.html', ob_get_clean() );
+		ob_start();
+		$dir4->print([ 'divider' => '\\', 'starting-slash' => false, 'ending-slash' => false ]);
+		$this->assertEquals( 'C:\Program Files\Directory Test', ob_get_clean() );
 	}
 
 	public function testCloning()

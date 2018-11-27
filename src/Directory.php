@@ -59,9 +59,9 @@ namespace WaughJ\Directory
 			return implode( '/', $this->directories );
 		}
 
-		public function print() : void
+		public function print( array $arguments = [] ) : void
 		{
-			echo $this;
+			echo $this->getString( $arguments );
 		}
 
 		public function getDirectoryChain() : array
