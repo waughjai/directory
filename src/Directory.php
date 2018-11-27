@@ -3,6 +3,8 @@
 declare( strict_types = 1 );
 namespace WaughJ\Directory
 {
+	use WaughJ\VerifiedArgumentsSameType\VerifiedArgumentsSameType;
+
 	class Directory
 	{
 		public function __construct( $directories )
@@ -38,9 +40,23 @@ namespace WaughJ\Directory
 			return $this->getString();
 		}
 
-		public function getString() : string
+		public function getString( array $arguments = [] ) : string
 		{
-			return '/' . implode( '/', $this->directories ) . '/';
+			$settings = new VerifiedArgumentsSameType( $arguments, self::DEFAULT_ARGUMENTS );
+			return
+				( ( $settings->get( 'starting-slash' ) ) ? $settings->get( 'divider' ) : '' ) .
+				implode( $settings->get( 'divider' ), $this->directories ) .
+				( ( $settings->get( 'ending-slash' ) ) ? $settings->get( 'divider' ) : '' );
+		}
+
+		public function getStringWindows() : string
+		{
+			return implode( '\\', $this->directories );
+		}
+
+		public function getStringURL() : string
+		{
+			return implode( '/', $this->directories );
 		}
 
 		public function print() : void
@@ -108,5 +124,12 @@ namespace WaughJ\Directory
 		}
 
 		private $directories;
+
+		const DEFAULT_ARGUMENTS =
+		[
+			'divider' => '/',
+			'starting-slash' => true,
+			'ending-slash' => true
+		];
 	}
 }

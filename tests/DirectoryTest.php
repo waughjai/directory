@@ -21,6 +21,18 @@ class DirectoryTest extends TestCase
 		$this->assertEquals( $dir1, $dir3 );
 	}
 
+	public function testWindows()
+	{
+		$dir1 = new Directory([ 'C:', 'Program Files', 'Directory Test' ]);
+		$this->assertEquals( 'C:\Program Files\Directory Test', $dir1->getStringWindows() );
+	}
+
+	public function testURL()
+	{
+		$dir1 = new Directory([ 'https://www.jaimeson-waugh.com', 'index.html' ]);
+		$this->assertEquals( 'https://www.jaimeson-waugh.com/index.html', $dir1->getStringURL() );
+	}
+
 	public function testAdding()
 	{
 		$dir1 = new Directory([ 'var', 'www', 'html' ]);
@@ -52,6 +64,13 @@ class DirectoryTest extends TestCase
 	{
 		$dir1 = new Directory([ 'var', 'www', 'html' ]);
 		$this->assertEquals( '/var/www/html/', $dir1->getString() );
+		$this->assertEquals( '/var/www/html/', $dir1->getString([ 'divider' => '/', 'starting-slash' => true, 'ending-slash' => true ]) );
+		$dir2 = new Directory([ 'https://www.jaimeson-waugh.com' ]);
+		$this->assertEquals( 'https://www.jaimeson-waugh.com/', $dir2->getString([ 'divider' => '/', 'starting-slash' => false, 'ending-slash' => true ]) );
+		$dir3 = new Directory([ 'https://www.jaimeson-waugh.com', 'index.html' ]);
+		$this->assertEquals( 'https://www.jaimeson-waugh.com/index.html', $dir3->getString([ 'divider' => '/', 'starting-slash' => false, 'ending-slash' => false ]) );
+		$dir4 = new Directory([ 'C:', 'Program Files', 'Directory Test' ]);
+		$this->assertEquals( 'C:\Program Files\Directory Test', $dir4->getString([ 'divider' => '\\', 'starting-slash' => false, 'ending-slash' => false ]) );
 		ob_start();
 		$dir1->print();
 		$this->assertEquals( '/var/www/html/', ob_get_clean() );
