@@ -94,4 +94,10 @@ class DirectoryTest extends TestCase
 		// Make sure original hasn't been changed.
 		$this->assertEquals( $dir1, new Directory([ 'var', 'www', 'html' ]) );
 	}
+
+	public function testExcessSlashes()
+	{
+		$dir = new Directory([ '/en.wikipedia.org/', '//w/index.php?title=PHP&action=edit&section=6' ]);
+		$this->assertEquals( 'en.wikipedia.org/w/index.php?title=PHP&action=edit&section=6', $dir->getStringURL() );
+	}
 }

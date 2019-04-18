@@ -7,11 +7,11 @@ namespace WaughJ\Directory
 
 	class Directory
 	{
-		public function __construct( $directories )
+		public function __construct( $directories, $protocol = null )
 		{
 			if ( is_array( $directories ) )
 			{
-				$this->directories = $directories;
+				$this->directories = self::breakDownDirectoryString( implode( '/', $directories ) );
 			}
 			else if ( is_string( $directories ) )
 			{
@@ -33,6 +33,25 @@ namespace WaughJ\Directory
 			{
 				throw new \Exception( "Invalid type: " . gettype( $directories ) );
 			}
+
+			if ( $protocol )
+			{
+				$this->protocol = $protocol;
+			}
+			else
+			{
+				$matches = [];
+				preg_match( '/^([a-z]+):/', $this->directories[ 0 ], $matches );
+				if ( count( $matches ) > 1 )
+				{
+					$this->protocol = $matches[ 1 ];
+					array_shift( $this->directories );
+				}
+				else
+				{
+					$this->protocol = null;
+				}
+			}
 		}
 
 		public function __toString()
@@ -45,6 +64,7 @@ namespace WaughJ\Directory
 			$settings = new VerifiedArgumentsSameType( $arguments, self::DEFAULT_ARGUMENTS );
 			return
 				( ( $settings->get( 'starting-slash' ) ) ? $settings->get( 'divider' ) : '' ) .
+				$this->getFormattedProtocol() .
 				implode( $settings->get( 'divider' ), $this->directories ) .
 				( ( $settings->get( 'ending-slash' ) ) ? $settings->get( 'divider' ) : '' );
 		}
@@ -56,7 +76,7 @@ namespace WaughJ\Directory
 
 		public function getStringURL() : string
 		{
-			return implode( '/', $this->directories );
+			return $this->getString( [ 'starting-slash' => false, 'ending-slash' => false, 'divider' => '/' ] );
 		}
 
 		public function print( array $arguments = [] ) : void
@@ -74,7 +94,7 @@ namespace WaughJ\Directory
 		public function addDirectory( $directory ) : Directory
 		{
 			$directory = new Directory( $directory );
-			return new Directory( array_merge( $this->directories, $directory->getDirectoryChain() ) );
+			return new Directory( array_merge( $this->directories, $directory->getDirectoryChain() ), $this->protocol );
 		}
 
 		public function getParent() : Directory
@@ -86,9 +106,9 @@ namespace WaughJ\Directory
 				$new_array = $this->directories;
 				// Remove last directory o' list ( since this function mutates array, we need to use a copy )
 				array_pop( $new_array );
-				return new Directory( $new_array );
+				return new Directory( $new_array, $this->protocol );
 			}
-			return new Directory( '/' );
+			return new Directory( '/', $this->protocol );
 		}
 
 		public function getLocal() : string
@@ -99,6 +119,11 @@ namespace WaughJ\Directory
 				return $this->directories[ $number_of_subdirectories - 1 ];
 			}
 			return "/";
+		}
+
+		private function getFormattedProtocol() : string
+		{
+			return ( $this->protocol !== null ) ? $this->protocol . '://' : '';
 		}
 
 		private static function breakDownDirectoryString( string $directory_string ) : array
@@ -117,13 +142,17 @@ namespace WaughJ\Directory
 			{
 				foreach ( $directory_list as $single_directory )
 				{
-					array_push( $directories, $single_directory );
+					if ( !empty( $single_directory ) )
+					{
+						array_push( $directories, $single_directory );
+					}
 				}
 			}
 			return $directories;
 		}
 
 		private $directories;
+		private $protocol;
 
 		const DEFAULT_ARGUMENTS =
 		[
