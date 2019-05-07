@@ -5,6 +5,13 @@ use WaughJ\Directory\Directory;
 
 class DirectoryTest extends TestCase
 {
+	public function testEmptyDirectory()
+	{
+		$dir = new Directory( '' );
+		$this->assertEquals( 0, count( $dir->getDirectoryChain() ) );
+		$this->assertEquals( ( string )( $dir ), '' );
+	}
+
 	public function testConsistency()
 	{
 		$dir1 = new Directory( '/var/www/html/' );

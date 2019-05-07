@@ -34,22 +34,19 @@ namespace WaughJ\Directory
 				throw new \Exception( "Invalid type: " . gettype( $directories ) );
 			}
 
+			$this->protocol = null;
 			if ( $protocol )
 			{
 				$this->protocol = $protocol;
 			}
-			else
+			else if ( count( $this->directories ) > 0 ) // If we have any directory items.
 			{
 				$matches = [];
-				preg_match( '/^([a-z]+):/', $this->directories[ 0 ], $matches );
-				if ( count( $matches ) > 1 )
+				preg_match( '/^([a-z]+):/', $this->directories[ 0 ], $matches ); // Look for protocol-like string in 1st directory item.
+				if ( count( $matches ) > 1 ) // If matches found
 				{
-					$this->protocol = $matches[ 1 ];
-					array_shift( $this->directories );
-				}
-				else
-				{
-					$this->protocol = null;
+					$this->protocol = $matches[ 1 ]; // Only want 1st match.
+					array_shift( $this->directories ); // Take protocol out o' directory chain.
 				}
 			}
 		}
@@ -62,11 +59,13 @@ namespace WaughJ\Directory
 		public function getString( array $arguments = [] ) : string
 		{
 			$settings = new VerifiedArgumentsSameType( $arguments, self::DEFAULT_ARGUMENTS );
+			$empty_string = count( $this->directories ) <= 0 && $this->protocol === null;
+			// Format with slashes depending on properties.
 			return
-				( ( $settings->get( 'starting-slash' ) ) ? $settings->get( 'divider' ) : '' ) .
+				( ( $settings->get( 'starting-slash' ) && !$empty_string ) ? $settings->get( 'divider' ) : '' ) .
 				$this->getFormattedProtocol() .
 				implode( $settings->get( 'divider' ), $this->directories ) .
-				( ( $settings->get( 'ending-slash' ) ) ? $settings->get( 'divider' ) : '' );
+				( ( $settings->get( 'ending-slash' ) && !$empty_string  ) ? $settings->get( 'divider' ) : '' );
 		}
 
 		public function getStringWindows() : string
